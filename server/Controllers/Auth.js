@@ -16,7 +16,9 @@ const createUser = async (req, res) => {
     // checking if user already exists
     let checkUser = await UserModel.findOne({ email });
     if (checkUser) {
-      return res.status(400).json({ err: "User Already Exists, Please Login" });
+      return res
+        .status(400)
+        .json({ error: "User Already Exists, Please Login" });
     }
 
     //hasing password
@@ -30,16 +32,16 @@ const createUser = async (req, res) => {
       password: hashPass,
     })
       .then((user) => res.json(user))
-      .catch((err) => res.status(500).json(err.message));
-  } catch (err) {
-    res.status(500).json(err.message);
+      .catch((error) => res.status(500).json(error.message));
+  } catch (error) {
+    res.status(500).json(error.message);
   }
 };
 
 //Login User
 const Login = async (req, res) => {
   try {
-    //express validator code checking errors
+    //express validator checking errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -47,9 +49,9 @@ const Login = async (req, res) => {
 
     const { email, password } = req.body;
     const CheckingUser = await UserModel.findOne({ email });
-    console.log(CheckingUser);
+
     if (!CheckingUser) {
-      return res.status(400).json({ err: "User donst Exists" });
+      return res.status(400).json({ error: "User donst Exists" });
     }
     const passwordCompare = await bcrypt.compare(
       password,
@@ -68,9 +70,9 @@ const Login = async (req, res) => {
     const jwtkey = process.env.JWT_KEY;
     const authToken = jwt.sign(data, jwtkey);
 
-    res.json({ authToken });
-  } catch (err) {
-    res.status(500).json(err.message);
+    res.status(200).json({ authToken });
+  } catch (error) {
+    res.status(500).json(error.message);
   }
 };
 
